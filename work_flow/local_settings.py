@@ -15,6 +15,7 @@ HOST_URL = os.environ.get("HOST_URL", "http://localhost:8000")
 os.environ.setdefault('E_FLOWER_HOST', '127.0.0.1')
 os.environ.setdefault('E_FLOWER_PORT', '5555')
 os.environ.setdefault("E_DB_DATABASE", 'work_flow')
+os.environ.setdefault("E_DB_DATABASE_TEST", 'work_flow_test')
 os.environ.setdefault("E_DB_USER", 'work_flow')
 os.environ.setdefault("E_DB_PASSWORD", 'work_flow')
 os.environ.setdefault("E_DB_ADDRESS", 'localhost')
@@ -29,7 +30,7 @@ DATABASES = {
         'HOST': os.environ.get("E_DB_ADDRESS"),
         'PORT': os.environ.get("E_DB_PORT"),
         'TEST': {
-            'NAME': os.environ.get("E_DB_DATABASE"),
+            'NAME': os.environ.get("E_DB_DATABASE_TEST"),
         }
     }
 }
