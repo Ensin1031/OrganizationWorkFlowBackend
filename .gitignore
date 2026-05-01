@@ -1,0 +1,17 @@
+/Test
+static/**
+.git
+.idea/**
+venv
+env
+.venv
+.env
+__pycache__
+media/**
+work_flow/local_settings.py
+/newrelic.ini
+
+.ai/**
+logs/AdminLogger.log
+.vscode
+.vscode/*

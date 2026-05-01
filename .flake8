@@ -1,0 +1,16 @@
+[flake8]
+max-line-length=120
+max-complexity=31
+format=pylint
+pylint-py3k-check = True
+ban-imports =
+    ^work_flow\.settings
+exclude=
+    work_flow/local_settings.py
+    migrations
+    venv/*
+    env/*
+    .venv/*
+    .env/*
+    */data_class/*
+    .ai/*
