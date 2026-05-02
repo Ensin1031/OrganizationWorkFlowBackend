@@ -3,6 +3,7 @@
 import colorfield.fields
 import django.db.models.deletion
 import django_ckeditor_5.fields
+from django.conf import settings
 from django.db import migrations, models
 
 
@@ -12,9 +13,46 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('references', '0001_initial'),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
+        migrations.CreateModel(
+            name='ProjectCategory',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')),
+                ('updated', models.DateTimeField(auto_now=True, db_index=True, verbose_name='Дата обновления')),
+                ('is_active', models.BooleanField(blank=True, db_index=True, default=True, verbose_name='Активен')),
+                ('icon', models.TextField(blank=True, verbose_name='SVG Изображение/иконка')),
+                ('name', models.CharField(blank=True, max_length=255, verbose_name='Наименование')),
+                ('description', django_ckeditor_5.fields.CKEditor5Field(blank=True, verbose_name='Описание')),
+                ('slug', models.SlugField(blank=True, max_length=100, unique=True, verbose_name='Слаг (URL) записи')),
+                ('color', colorfield.fields.ColorField(blank=True, default=None, help_text='Оставьте пустым для случайного выбора цвета', image_field=None, max_length=25, null=True, samples=None, verbose_name='Цвет')),
+            ],
+            options={
+                'verbose_name': 'Категория проекта',
+                'verbose_name_plural': 'Категории проектов',
+            },
+        ),
+        migrations.CreateModel(
+            name='ProjectType',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created', models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')),
+                ('updated', models.DateTimeField(auto_now=True, db_index=True, verbose_name='Дата обновления')),
+                ('is_active', models.BooleanField(blank=True, db_index=True, default=True, verbose_name='Активен')),
+                ('icon', models.TextField(blank=True, verbose_name='SVG Изображение/иконка')),
+                ('name', models.CharField(blank=True, max_length=255, verbose_name='Наименование')),
+                ('description', django_ckeditor_5.fields.CKEditor5Field(blank=True, verbose_name='Описание')),
+                ('slug', models.SlugField(blank=True, max_length=100, unique=True, verbose_name='Слаг (URL) записи')),
+                ('color', colorfield.fields.ColorField(blank=True, default=None, help_text='Оставьте пустым для случайного выбора цвета', image_field=None, max_length=25, null=True, samples=None, verbose_name='Цвет')),
+            ],
+            options={
+                'verbose_name': 'Тип проекта',
+                'verbose_name_plural': 'Типы проектов',
+            },
+        ),
         migrations.CreateModel(
             name='Project',
             fields=[
@@ -30,6 +68,10 @@ class Migration(migrations.Migration):
                 ('slug', models.SlugField(blank=True, max_length=100, unique=True, verbose_name='Слаг (URL) записи')),
                 ('color', colorfield.fields.ColorField(blank=True, default=None, help_text='Оставьте пустым для случайного выбора цвета', image_field=None, max_length=25, null=True, samples=None, verbose_name='Цвет')),
                 ('code_prefix', models.CharField(blank=True, help_text='Если оставить пустым, сгенерируется автоматически из имени', max_length=10, verbose_name='Префикс кода задач проекта')),
+                ('urls', models.JSONField(blank=True, default=list, null=True, verbose_name='Ссылки на ресурсы проекта')),
+                ('manage_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='user_manage_projects', to=settings.AUTH_USER_MODEL, verbose_name='Руководитель проекта')),
+                ('category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='projects', to='project.projectcategory', verbose_name='Категория проекта')),
+                ('type', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='projects', to='project.projecttype', verbose_name='Тип проекта')),
             ],
             options={
                 'verbose_name': 'Проект',
@@ -62,6 +104,7 @@ class Migration(migrations.Migration):
                 ('description', django_ckeditor_5.fields.CKEditor5Field(blank=True, verbose_name='Описание')),
                 ('slug', models.SlugField(blank=True, max_length=100, unique=True, verbose_name='Слаг (URL) записи')),
                 ('color', colorfield.fields.ColorField(blank=True, default=None, help_text='Оставьте пустым для случайного выбора цвета', image_field=None, max_length=25, null=True, samples=None, verbose_name='Цвет')),
+                ('in_work', models.BooleanField(blank=True, db_index=True, default=False, help_text='В проекте может быть только одна. При установке - остальные скидываются.', verbose_name='Текущая рабочая версия')),
                 ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='project_versions', to='project.project', verbose_name='Проект')),
             ],
             options={
