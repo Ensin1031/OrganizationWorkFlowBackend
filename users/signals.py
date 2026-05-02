@@ -6,4 +6,5 @@ from users.models import UserExtended
 
 @receiver(post_save, sender=UserExtended)
 def user_saved(sender, instance: UserExtended, created, **kwargs):
+
     pass

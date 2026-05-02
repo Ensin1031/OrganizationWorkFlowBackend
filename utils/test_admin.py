@@ -1,7 +1,7 @@
 """ Вспомогательные методы для тестов на доступ в админку
 Сделаны на базе: https://stackoverflow.com/questions/60322847/how-to-test-admin-change-views
 """
-from unittest import TestCase
+from django.test import TestCase
 
 from django.db.models import Model
 from django.urls import reverse

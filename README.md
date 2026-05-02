@@ -21,8 +21,17 @@
       -e POSTGRES_USER=work_flow \
       -e POSTGRES_PASSWORD=work_flow \
       -p 15432:5432 \
-      -v postgres_data:/var/lib/postgresql/data \
+      -v postgres_work_flow_data:/var/lib/postgresql/data \
       postgres:15
+    ```
+   Если необходимо полностью пересоздать контейнер с БД:
+   ```sh
+   docker rm -f postgres-work-flow
+   ```
+   Если при этом так-же необходимо дропнуть данные в БД:
+   ```sh
+   docker volume rm postgres_work_flow_data
+   ```
 3. Устанавливаем redis на операционную систему:
     ```sh
     sudo apt install redis-server 
