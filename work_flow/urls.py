@@ -23,6 +23,8 @@ from django.views.static import serve
 urlpatterns = [
 
     path('api/', include('users.urls')),
+    path('api/', include('project.urls')),
+    path('api/', include('references.urls')),
 
     path('admin/', admin.site.urls),
     path("ckeditor5/", include('django_ckeditor_5.urls')),

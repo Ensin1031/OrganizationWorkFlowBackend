@@ -3,20 +3,26 @@ from django.db import models
 from django.db.models import UniqueConstraint
 from django.db.models.functions import Lower
 
+from permissions.models import ACLModelMixin
+from utils.django_validate import validate_is_image, validate_is_image_not_broken, validate_image_size
 from utils.model_mixins import CreatedUpdatedMixin, IsActiveMixin, SlugMixin
 
 
-class UserExtended(CreatedUpdatedMixin, IsActiveMixin, SlugMixin, AbstractUser):
+class UserExtended(CreatedUpdatedMixin, IsActiveMixin, SlugMixin, ACLModelMixin, AbstractUser):
     """ Пользователь (расширенная модель) """
     username = models.CharField("Имя пользователя", db_index=True, max_length=255, unique=True)
     email = models.EmailField("E-mail", db_index=True, unique=True)
     second_name = models.CharField("Отчество", max_length=255, blank=True)
     is_staff = models.BooleanField("Персонал", default=False)
-
     is_verified = models.BooleanField(
         "Верифицирован", default=False,
         help_text="Указывает, завершил ли данный пользователь"
                   " процесс проверки электронной почты, чтобы разрешить вход в систему")
+    birth_date = models.DateField('Дата рождения', blank=True, null=True)
+    profile_photo = models.FileField(
+        verbose_name='Фотография пользователя', upload_to='users/profile_photos', blank=True,
+        validators=[validate_is_image, validate_is_image_not_broken, validate_image_size],
+    )
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', ]

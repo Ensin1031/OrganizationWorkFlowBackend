@@ -1,11 +1,15 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions, status
+from rest_framework.filters import SearchFilter
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from users.api.serializers import UserSerializer
+from permissions.api.mixins import ACLViewSetMixin
+from users.api.serializers import UserSerializer, CustomTokenObtainPairSerializer
 from users.models import UserExtended
 
 
@@ -16,7 +20,7 @@ class RegisterView(generics.CreateAPIView):
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
-    pass
+    serializer_class = CustomTokenObtainPairSerializer
 
 
 class LogoutView(APIView):
@@ -44,3 +48,17 @@ class LogoutView(APIView):
                 {"detail": "Invalid or expired refresh token."},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+
+class UserExtendedViewSet(ACLViewSetMixin):
+    queryset = UserExtended.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = None
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+
+    search_fields = ['first_name', 'second_name', 'last_name']
+
+    def get_queryset(self):
+        queryset = super().get_queryset().filter(is_active=True)
+        return queryset

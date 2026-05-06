@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'project',
     'sprint',
     'work',
+    'permissions',
     'comments',
     'references',
 ]

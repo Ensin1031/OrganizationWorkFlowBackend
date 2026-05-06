@@ -14,7 +14,7 @@ class UserExtendedAdmin(UserAdmin):
         )}),
         (_('Personal info'), {
             'fields': (
-                'email', 'first_name', 'second_name', 'last_name', 'is_verified',
+                'email', 'first_name', 'second_name', 'last_name', 'is_verified', 'birth_date', 'profile_photo',
             )}),
         (
             _('Permissions'),

@@ -4,6 +4,7 @@ from colorfield.fields import ColorField
 from django.db import models
 from django_ckeditor_5.fields import CKEditor5Field
 
+from permissions.models import ACLModelMixin
 from utils.custom_slugify import custom_slugify
 
 
@@ -121,7 +122,7 @@ class ColorFieldMixin(models.Model):
 
 
 class ReferenceMixin(
-    DescriptionMixin, IsActiveMixin, SlugMixin, ColorFieldMixin, SVGTextIconMixin, CreatedUpdatedMixin,
+    DescriptionMixin, IsActiveMixin, SlugMixin, ColorFieldMixin, SVGTextIconMixin, CreatedUpdatedMixin, ACLModelMixin
 ):
     class Meta:
         abstract = True

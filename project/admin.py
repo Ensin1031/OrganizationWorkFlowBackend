@@ -1,7 +1,7 @@
 from django.contrib import admin
 from nested_admin.nested import NestedModelAdmin, NestedTabularInline
 
-from project.models import Project, ProjectStatus, ProjectVersion
+from project.models import Project, ProjectStatus, ProjectVersion, ProjectCategory, ProjectType
 from utils.model_admin_mixins import ReferencesAdminMixin
 
 
@@ -38,8 +38,24 @@ class ProjectStatusAdmin(admin.ModelAdmin):
 
 @admin.register(ProjectVersion)
 class ProjectVersionAdmin(ReferencesAdminMixin):
-    list_display = ('id', 'name', 'project', 'is_active')
+    list_display = ('id', 'name', 'project', 'in_work', 'is_active')
     list_display_links = ('id', 'name',)
-    list_filter = ('is_active',)
+    list_filter = ('is_active', 'in_work')
     autocomplete_fields = ('project',)
     readonly_fields = ('slug', 'created', 'updated')
+
+
+@admin.register(ProjectCategory)
+class ProjectCategoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'slug', 'is_active')
+    list_display_links = ('id', 'name', 'slug',)
+    list_filter = ('is_active',)
+    readonly_fields = ('slug',)
+
+
+@admin.register(ProjectType)
+class ProjectTypeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'slug', 'is_active')
+    list_display_links = ('id', 'name', 'slug',)
+    list_filter = ('is_active',)
+    readonly_fields = ('slug',)
