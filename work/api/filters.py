@@ -1,0 +1,81 @@
+import django_filters
+
+from utils.drf_query_params_filter import RepeatedQueryParamFilter
+from work.models.work import Work
+
+
+class WorkFilter(django_filters.FilterSet):
+    without_types = RepeatedQueryParamFilter(
+        field_name='type_id',
+        param_name='without_types',
+        exclude=True,
+    )
+
+    only_types = RepeatedQueryParamFilter(
+        field_name='id',
+        param_name='only_types',
+    )
+
+    only_statuses = RepeatedQueryParamFilter(
+        field_name='status__status_id',
+        param_name='only_statuses',
+    )
+
+    ids = RepeatedQueryParamFilter(
+        field_name='id',
+        param_name='ids',
+    )
+
+    execute_by_users = RepeatedQueryParamFilter(
+        field_name='execute_by_id',
+        param_name='execute_by_users',
+    )
+
+    type = django_filters.BaseInFilter(
+        field_name='type',
+        lookup_expr='in',
+    )
+
+    sprint = django_filters.BaseInFilter(
+        field_name='sprint',
+        lookup_expr='in',
+    )
+
+    project = django_filters.BaseInFilter(
+        field_name='project',
+        lookup_expr='in',
+    )
+
+    created_by = django_filters.BaseInFilter(
+        field_name='created_by',
+        lookup_expr='in',
+    )
+
+    execute_by = django_filters.BaseInFilter(
+        field_name='execute_by',
+        lookup_expr='in',
+    )
+
+    without_sprints = django_filters.BooleanFilter(
+        method='filter_without_sprints',
+    )
+
+    without_execute_by = django_filters.BooleanFilter(
+        method='filter_without_execute_by',
+    )
+
+    class Meta:
+        model = Work
+        fields = []
+
+    def filter_without_sprints(self, queryset, name, value):
+        if value is True:
+            return queryset.filter(sprint__isnull=True)
+
+        return queryset
+
+    def filter_without_execute_by(self, queryset, name, value):
+        if value is True:
+            return queryset.filter(execute_by__isnull=True)
+
+        return queryset

@@ -2,19 +2,35 @@
 
 import colorfield.fields
 import django_ckeditor_5.fields
-from django.db import migrations, models
+from django.db import migrations, models, connection
 
 
 def set_default_objects(apps, schema_editor):
-    model = apps.get_model("references", "WorkType")
+    from utils.choices.default_work_types_choices import DefaultWorkTypes
+    WorkType = apps.get_model("references", "WorkType")
 
     for row in [
-        {'id': 1, 'name': 'Эпик', 'slug': 'epic', 'description': 'Создано автоматически — не изменять и не удалять. Тип работы для обозначения эпика', 'color': '#2A0BFF'},
-        {'id': 2, 'name': 'История', 'slug': 'story', 'description': 'Создано автоматически — не изменять и не удалять. Тип работы для обозначения пользовательской истории.', 'color': '#FBFF2F'},
-        {'id': 3, 'name': 'Задача', 'slug': 'task', 'description': 'Создано автоматически — не изменять и не удалять. Задание для выполнения.', 'color': '#60FF58'},
+        {
+            'id': choice.value,
+            'is_system': True,
+            'name': choice.label,
+            'slug': choice.slug,
+            'description': f'Создано автоматически — не изменять и не удалять. {choice.description}',
+            'color': choice.color,
+        } for choice in DefaultWorkTypes
     ]:
-        model.objects.create(**row)
+        WorkType.objects.create(**row)
 
+    # FIX SEQUENCE
+    with connection.cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT setval(
+                pg_get_serial_sequence('references_worktype', 'id'),
+                (SELECT MAX(id) FROM references_worktype)
+            );
+            """
+        )
 
 class Migration(migrations.Migration):
 
@@ -36,6 +52,7 @@ class Migration(migrations.Migration):
                 ('description', django_ckeditor_5.fields.CKEditor5Field(blank=True, verbose_name='Описание')),
                 ('slug', models.SlugField(blank=True, max_length=100, unique=True, verbose_name='Слаг (URL) записи')),
                 ('color', colorfield.fields.ColorField(blank=True, default=None, help_text='Оставьте пустым для случайного выбора цвета', image_field=None, max_length=25, null=True, samples=None, verbose_name='Цвет')),
+                ('is_system', models.BooleanField(default=False, editable=False)),
             ],
             options={
                 'verbose_name': 'Статус',
@@ -54,6 +71,7 @@ class Migration(migrations.Migration):
                 ('description', django_ckeditor_5.fields.CKEditor5Field(blank=True, verbose_name='Описание')),
                 ('slug', models.SlugField(blank=True, max_length=100, unique=True, verbose_name='Слаг (URL) записи')),
                 ('color', colorfield.fields.ColorField(blank=True, default=None, help_text='Оставьте пустым для случайного выбора цвета', image_field=None, max_length=25, null=True, samples=None, verbose_name='Цвет')),
+                ('is_system', models.BooleanField(default=False, editable=False)),
             ],
             options={
                 'verbose_name': 'Уровень сложности',
@@ -72,6 +90,7 @@ class Migration(migrations.Migration):
                 ('description', django_ckeditor_5.fields.CKEditor5Field(blank=True, verbose_name='Описание')),
                 ('slug', models.SlugField(blank=True, max_length=100, unique=True, verbose_name='Слаг (URL) записи')),
                 ('color', colorfield.fields.ColorField(blank=True, default=None, help_text='Оставьте пустым для случайного выбора цвета', image_field=None, max_length=25, null=True, samples=None, verbose_name='Цвет')),
+                ('is_system', models.BooleanField(default=False, editable=False)),
             ],
             options={
                 'verbose_name': 'Приоритет работы',
@@ -90,6 +109,7 @@ class Migration(migrations.Migration):
                 ('description', django_ckeditor_5.fields.CKEditor5Field(blank=True, verbose_name='Описание')),
                 ('slug', models.SlugField(blank=True, max_length=100, unique=True, verbose_name='Слаг (URL) записи')),
                 ('color', colorfield.fields.ColorField(blank=True, default=None, help_text='Оставьте пустым для случайного выбора цвета', image_field=None, max_length=25, null=True, samples=None, verbose_name='Цвет')),
+                ('is_system', models.BooleanField(default=False, editable=False)),
             ],
             options={
                 'verbose_name': 'Тэг работы',
@@ -108,6 +128,7 @@ class Migration(migrations.Migration):
                 ('description', django_ckeditor_5.fields.CKEditor5Field(blank=True, verbose_name='Описание')),
                 ('slug', models.SlugField(blank=True, max_length=100, unique=True, verbose_name='Слаг (URL) записи')),
                 ('color', colorfield.fields.ColorField(blank=True, default=None, help_text='Оставьте пустым для случайного выбора цвета', image_field=None, max_length=25, null=True, samples=None, verbose_name='Цвет')),
+                ('is_system', models.BooleanField(default=False, editable=False)),
             ],
             options={
                 'verbose_name': 'Технология работы',
@@ -126,6 +147,7 @@ class Migration(migrations.Migration):
                 ('description', django_ckeditor_5.fields.CKEditor5Field(blank=True, verbose_name='Описание')),
                 ('slug', models.SlugField(blank=True, max_length=100, unique=True, verbose_name='Слаг (URL) записи')),
                 ('color', colorfield.fields.ColorField(blank=True, default=None, help_text='Оставьте пустым для случайного выбора цвета', image_field=None, max_length=25, null=True, samples=None, verbose_name='Цвет')),
+                ('is_system', models.BooleanField(default=False, editable=False)),
             ],
             options={
                 'verbose_name': 'Тип работы',

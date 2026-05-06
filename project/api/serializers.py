@@ -8,6 +8,17 @@ from users.api.serializers import UserSerializer
 from users.models import UserExtended
 
 
+class ProjectStatusShortSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='status.name', read_only=True)
+    slug = serializers.CharField(source='status.slug', read_only=True)
+    color = serializers.CharField(source='status.color', read_only=True)
+    icon = serializers.CharField(source='status.icon', read_only=True)
+
+    class Meta:
+        model = ProjectStatus
+        fields = ['id', 'name', 'status', 'slug', 'color', 'icon', 'priority']
+
+
 class ProjectStatusSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(required=False)
     name = serializers.CharField(source='status.name', read_only=True)
@@ -20,7 +31,15 @@ class ProjectStatusSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProjectStatus
-        fields = ['id', 'name', 'description', 'status', 'slug', 'color', 'icon', 'created', 'updated']
+        fields = ['id', 'name', 'description', 'status', 'slug', 'color', 'icon', 'priority', 'created', 'updated']
+
+
+class ProjectVersionShortSerializer(serializers.ModelSerializer):
+    slug = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = ProjectVersion
+        fields = ['id', 'name', 'start_date', 'end_date', 'color', 'slug', 'in_work', 'project']
 
 
 class ProjectVersionSerializer(serializers.ModelSerializer):
@@ -41,8 +60,9 @@ class ProjectVersionSerializer(serializers.ModelSerializer):
         model = ProjectVersion
         fields = [
             'id', 'name', 'description', 'start_date', 'end_date', 'color',
-            'slug', 'in_work', 'created', 'updated', 'project_id',
+            'slug', 'in_work', 'created', 'updated', 'project', 'project_id',
         ]
+        read_only_fields = ['slug', 'created', 'updated', 'project']
 
 
 class ProjectCategorySerializer(serializers.ModelSerializer):
@@ -61,6 +81,22 @@ class ProjectTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectType
         fields = ['id', 'name', 'description', 'is_active', 'color', 'slug', 'has_projects', 'icon']
+
+
+class ProjectShortSerializer(serializers.ModelSerializer):
+
+    statuses = ProjectStatusSerializer(many=True, read_only=True, source='project_statuses')
+    versions = ProjectVersionSerializer(many=True, read_only=True, source='project_versions')
+    active_version = ProjectVersionSerializer(many=False, read_only=True, source='get_active_version')
+    slug = serializers.CharField(read_only=True)
+    full_name = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = Project
+        fields = [
+            'id', 'name', 'slug', 'color', 'icon', 'code_prefix', 'full_name',
+            'start_date', 'end_date', 'statuses', 'versions', 'active_version',
+        ]
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -100,13 +136,14 @@ class ProjectSerializer(serializers.ModelSerializer):
     )
 
     slug = serializers.CharField(read_only=True)
+    full_name = serializers.CharField(read_only=True)
     created = serializers.DateTimeField(read_only=True)
     updated = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Project
         fields = [
-            'id', 'name', 'description', 'slug', 'color', 'icon',
+            'id', 'name', 'description', 'slug', 'color', 'icon', 'full_name',
             'code_prefix', 'is_active', 'category', 'type', 'manage_by', 'urls',
             'start_date', 'end_date', 'category_id', 'type_id', 'manage_by_id',
             'created', 'updated', 'versions', 'active_version', 'set_active_version',

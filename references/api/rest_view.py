@@ -3,6 +3,7 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import IsAuthenticated
 
 from permissions.api.mixins import ACLViewSetMixin
+from references.api.filters import WorkTypeFilter
 from references.api.serializers import (
     StatusRowSerializer, WorkDifficultySerializer, WorkPrioritySerializer, WorkTagSerializer, WorkTechnologySerializer,
     WorkTypeSerializer,
@@ -37,7 +38,6 @@ class ReferencesViewSetMixin(ACLViewSetMixin):
 class StatusRowViewSet(ReferencesViewSetMixin):
     queryset = StatusRow.objects.all()
     serializer_class = StatusRowSerializer
-    pagination_class = None
 
 
 class WorkDifficultyViewSet(ReferencesViewSetMixin):
@@ -63,3 +63,4 @@ class WorkTechnologyViewSet(ReferencesViewSetMixin):
 class WorkTypeViewSet(ReferencesViewSetMixin):
     queryset = WorkType.objects.all()
     serializer_class = WorkTypeSerializer
+    filterset_class = WorkTypeFilter

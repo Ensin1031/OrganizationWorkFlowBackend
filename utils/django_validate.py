@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import BinaryIO
 
 from PIL import Image
@@ -31,9 +32,13 @@ def validate_is_image(image):
 
 def validate_is_image_not_broken(image: BinaryIO):
     """ Валидатор фотографии целостность. """
+    if Path(getattr(image, 'name', '')).suffix.lower() == '.svg':
+        return True
     try:
+        image.seek(0)
         img = Image.open(image)
-        img.verify()  # Проверка целостности файла
+        img.verify()
+        image.seek(0)
         return True
     except Exception:
         raise DjangoValidationError("Битый файл")

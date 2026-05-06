@@ -8,6 +8,23 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from users.models import UserExtended
 
 
+class UserExtendedShortSerializer(serializers.ModelSerializer):
+    full_name = serializers.CharField(read_only=True, source='get_full_name')
+    profile_photo = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserExtended
+        fields = ['id', 'email', 'profile_photo', 'full_name']
+
+    def get_profile_photo(self, obj):
+        request = self.context.get('request')
+        if obj.profile_photo:
+            if request:
+                return request.build_absolute_uri(obj.profile_photo.url)
+            return obj.profile_photo.url
+        return None
+
+
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     profile_photo_remove = serializers.BooleanField(write_only=True, required=False)
