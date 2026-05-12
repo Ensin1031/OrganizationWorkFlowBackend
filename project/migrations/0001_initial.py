@@ -83,6 +83,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('is_active', models.BooleanField(blank=True, db_index=True, default=True, verbose_name='Активен')),
+                ('priority', models.IntegerField(blank=True, db_index=True, default=0, verbose_name='Приоритет статуса в проекте')),
                 ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='project_statuses', to='project.project', verbose_name='Проект')),
                 ('status', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='project_statuses', to='references.statusrow', verbose_name='Статус')),
             ],

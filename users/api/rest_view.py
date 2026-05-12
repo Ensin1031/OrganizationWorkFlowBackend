@@ -54,7 +54,6 @@ class UserExtendedViewSet(ACLViewSetMixin):
     queryset = UserExtended.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
-    pagination_class = None
     filter_backends = [DjangoFilterBackend, SearchFilter]
 
     search_fields = ['first_name', 'second_name', 'last_name']

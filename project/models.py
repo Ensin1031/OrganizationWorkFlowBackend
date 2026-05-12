@@ -101,6 +101,19 @@ class Project(
     def get_active_version(self) -> Optional['ProjectVersion']:
         return self.project_versions.filter(is_active=True, in_work=True).first()
 
+    def full_name(self) -> str:
+        return f'[{self.code_prefix}] {self.name}'
+
+    def generate_project_task_slug(self) -> str:
+        from work.models.work import Work
+        counter = 0
+        tasks_count = self.works.all().count()
+        task_slug = f'{self.code_prefix}-{tasks_count}'
+        while Work.objects.filter(slug=task_slug).exists():
+            counter += 1
+            task_slug = f'{self.code_prefix}-{"0" * counter}{tasks_count}'
+        return task_slug
+
 
 class ProjectStatus(
     IsActiveMixin, ACLModelMixin,
@@ -112,6 +125,7 @@ class ProjectStatus(
     project = models.ForeignKey(
         Project, on_delete=models.CASCADE, related_name='project_statuses', verbose_name='Проект'
     )
+    priority = models.IntegerField("Приоритет статуса в проекте", db_index=True, default=0, blank=True)
 
     class Meta:
         verbose_name = 'Статус проекта'

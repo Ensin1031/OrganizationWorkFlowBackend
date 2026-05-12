@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 
+from permissions.models import ACLModelMixin
 from project.models import Project, ProjectStatus, ProjectVersion
 from references.models.work_difficulty import WorkDifficulty
 from references.models.work_priority import WorkPriority
@@ -16,7 +17,7 @@ from utils.model_mixins import (
 
 class Work(
     UniqueNameMixin, DescriptionMixin, IsActiveMixin, ColorFieldMixin,
-    SVGTextIconMixin, CreatedUpdatedMixin, StartEndDatesMixin,
+    SVGTextIconMixin, CreatedUpdatedMixin, StartEndDatesMixin, ACLModelMixin,
 ):
     epic = models.ForeignKey(
         'self', on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Эпик', related_name='epic_works',
@@ -76,8 +77,13 @@ class Work(
         return f"{self.slug or self.name}"
 
     def save(self, *, force_insert=False, force_update=False, using=None, update_fields=None):
+        if not self.wasted_time:
+            self.wasted_time = self.lead_time
         super().save(force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
         if not self.slug:
             self.refresh_from_db()
-            self.slug = f'{self.project.code_prefix}-{self.pk}'.upper()
+            self.slug = self.project.generate_project_task_slug()
             self.save(update_fields=['slug'])
+
+    def full_name(self) -> str:
+        return f'[{self.slug}] {self.name}'

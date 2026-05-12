@@ -9,7 +9,7 @@ class ACLViewSetMixin(ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     @action(detail=False, methods=["GET", ], url_path="can-create", url_name="can-create")
-    def can_create(self, request) -> Response:
+    def can_create(self, request, *args, **kwargs) -> Response:
         return Response(
             {
                 'can_create': self.get_serializer().Meta.model.can_create(
@@ -20,7 +20,7 @@ class ACLViewSetMixin(ModelViewSet):
         )
 
     @action(detail=True, methods=["GET"], url_path="can-edit", url_name="can-edit")
-    def can_edit(self, request, pk=None) -> Response:
+    def can_edit(self, request, *args, **kwargs) -> Response:
         return Response(
             {
                 'can_edit': self.get_object().can_edit(
@@ -31,7 +31,7 @@ class ACLViewSetMixin(ModelViewSet):
         )
 
     @action(detail=True, methods=["GET"], url_path="can-view", url_name="can-view")
-    def can_view(self, request, pk=None) -> Response:
+    def can_view(self, request, *args, **kwargs) -> Response:
         return Response(
             {
                 'can_view': self.get_object().can_view(

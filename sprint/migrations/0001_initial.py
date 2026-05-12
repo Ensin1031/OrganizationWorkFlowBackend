@@ -26,6 +26,8 @@ class Migration(migrations.Migration):
                 ('description', django_ckeditor_5.fields.CKEditor5Field(blank=True, verbose_name='Описание')),
                 ('slug', models.SlugField(blank=True, max_length=100, unique=True, verbose_name='Слаг (URL) записи')),
                 ('color', colorfield.fields.ColorField(blank=True, default=None, help_text='Оставьте пустым для случайного выбора цвета', image_field=None, max_length=25, null=True, samples=None, verbose_name='Цвет')),
+                ('in_work', models.BooleanField(blank=True, db_index=True, default=False, verbose_name='Спринт в работе, активен')),
+                ('is_completed', models.BooleanField(blank=True, db_index=True, default=False, verbose_name='Спринт завершен')),
             ],
             options={
                 'verbose_name': 'Спринт',

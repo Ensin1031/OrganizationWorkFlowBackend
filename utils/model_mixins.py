@@ -124,5 +124,7 @@ class ColorFieldMixin(models.Model):
 class ReferenceMixin(
     DescriptionMixin, IsActiveMixin, SlugMixin, ColorFieldMixin, SVGTextIconMixin, CreatedUpdatedMixin, ACLModelMixin
 ):
+    is_system = models.BooleanField(default=False, editable=False)
+
     class Meta:
         abstract = True
