@@ -3,11 +3,12 @@ from django.db import models
 from mptt.fields import TreeForeignKey
 from mptt.models import MPTTModel
 
+from permissions.models import ACLModelMixin
 from utils.model_mixins import CreatedUpdatedMixin, IsActiveMixin, SlugMixin, DescriptionMixin
 from work.models.work import Work
 
 
-class WorkComment(MPTTModel, DescriptionMixin, IsActiveMixin, SlugMixin, CreatedUpdatedMixin):
+class WorkComment(MPTTModel, DescriptionMixin, IsActiveMixin, SlugMixin, CreatedUpdatedMixin, ACLModelMixin):
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Автор', related_name='comments',
     )
