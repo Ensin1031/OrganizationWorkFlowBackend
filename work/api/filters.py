@@ -1,10 +1,18 @@
 import django_filters
+from django.db.models import Q
 
 from utils.drf_query_params_filter import RepeatedQueryParamFilter
 from work.models.work import Work
+from work.models.work_connection import WorkConnection
 
 
 class WorkFilter(django_filters.FilterSet):
+    without_rows = RepeatedQueryParamFilter(
+        field_name='slug',
+        param_name='without_rows',
+        exclude=True,
+    )
+
     without_types = RepeatedQueryParamFilter(
         field_name='type_id',
         param_name='without_types',
@@ -34,6 +42,11 @@ class WorkFilter(django_filters.FilterSet):
     type = django_filters.BaseInFilter(
         field_name='type',
         lookup_expr='in',
+    )
+
+    epic = RepeatedQueryParamFilter(
+        field_name='epic__slug',
+        param_name='epic',
     )
 
     sprint = django_filters.BaseInFilter(
@@ -79,3 +92,14 @@ class WorkFilter(django_filters.FilterSet):
             return queryset.filter(execute_by__isnull=True)
 
         return queryset
+
+
+class WorkConnectionFilter(django_filters.FilterSet):
+    work = django_filters.CharFilter(method='filter_work')
+
+    class Meta:
+        model = WorkConnection
+        fields = ['work', 'type']
+
+    def filter_work(self, queryset, name, value):
+        return queryset.filter(Q(work_from__slug=value) | Q(work_to__slug=value))

@@ -38,15 +38,36 @@ class WorkShortSerializer(serializers.ModelSerializer):
 class WorkConnectionSerializer(serializers.ModelSerializer):
 
     id = serializers.IntegerField(required=False)
-    slug = serializers.CharField(read_only=True)
+    name = serializers.CharField(read_only=True, required=False, default='')
+    slug = serializers.CharField(read_only=True, required=False, default='')
+    type_id = serializers.CharField(read_only=True, required=False, default='')
     type_name = serializers.CharField(read_only=True, source='get_type_display')
     work_from = WorkShortSerializer(read_only=True, many=False)
     work_to = WorkShortSerializer(read_only=True, many=False)
+
+    work_from_id = serializers.SlugRelatedField(
+        queryset=Work.objects.all(),
+        slug_field='slug',
+        source='work_from',
+        write_only=True,
+        required=True,
+        allow_null=False,
+    )
+    work_to_id = serializers.SlugRelatedField(
+        queryset=Work.objects.all(),
+        slug_field='slug',
+        source='work_to',
+        write_only=True,
+        required=True,
+        allow_null=False,
+    )
 
     class Meta:
         model = WorkConnection
         fields = [
             'id', 'type', 'type_name', 'work_from', 'work_to',
+            'name', 'slug', 'type_id',
+            'work_from_id', 'work_to_id',
         ]
 
 
@@ -67,8 +88,8 @@ class WorkSerializer(serializers.ModelSerializer):
     technology = WorkTechnologyShortSerializer(many=False, read_only=True, required=False, allow_null=True)
     versions = ProjectVersionShortSerializer(many=True, read_only=True)
 
-    relations_from = WorkConnectionSerializer(many=True, read_only=True, source='connections_from')
-    relations_to = WorkConnectionSerializer(many=True, read_only=True, source='connections_to')
+    # relations_from = WorkConnectionSerializer(many=True, read_only=True, source='connections_from')
+    # relations_to = WorkConnectionSerializer(many=True, read_only=True, source='connections_to')
 
     full_name = serializers.CharField(read_only=True)
     slug = serializers.CharField(read_only=True)
@@ -178,7 +199,7 @@ class WorkSerializer(serializers.ModelSerializer):
             'slug', 'epic', 'histories', 'type', 'priority', 'tags', 'project', 'sprint', 'status', 'full_name',
             'created_by', 'execute_by', 'difficulty', 'technology', 'versions', 'target_start_date', 'target_end_date',
             'lead_time', 'wasted_time',
-            'relations_from', 'relations_to',
+            # 'relations_from', 'relations_to',
             'created_by_id', 'execute_by_id', 'priority_id', 'project_id', 'status_id', 'sprint_id', 'type_id',
             'epic_id', 'difficulty_id', 'technology_id', 'tags_ids', 'histories_ids', 'versions_ids',
         ]
