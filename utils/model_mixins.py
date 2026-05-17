@@ -99,6 +99,13 @@ class SlugMixin(models.Model):
                 while self.__class__.objects.filter(slug=slug).exists():
                     slug = f"{base_slug}-{counter}"
                     counter += 1
+            if len(slug) > 100:
+                slug = slug[:90]
+                base_slug = slug
+                counter = 1
+                while self.__class__.objects.filter(slug=slug).exists():
+                    slug = f"{base_slug}-{counter}"
+                    counter += 1
             self.slug = slug
         super().save(force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
 

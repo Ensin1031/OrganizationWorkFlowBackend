@@ -10,7 +10,6 @@ from utils.generate_random_avatar_svg import generate_avatar_svg
 
 @receiver(post_save, sender=UserExtended)
 def user_saved(sender, instance: UserExtended, created, **kwargs):
-
     pass
 
 

@@ -17,3 +17,28 @@ class WorkConnectionType(models.TextChoices):
     IS_SUBTASK_OF = "is_subtask_of", "Является дочерней от задачи"
     CAUSES = "causes", "Является причиной для задачи"
     IS_CAUSED_BY = "is_caused_by", "Вызвана от задачи"
+
+
+REVERSE_TYPES = {
+    WorkConnectionType.IS_BLOCKED_BY: WorkConnectionType.BLOCKS,
+    WorkConnectionType.BLOCKS: WorkConnectionType.IS_BLOCKED_BY,
+
+    WorkConnectionType.CLONES: WorkConnectionType.IS_CLONED_BY,
+    WorkConnectionType.IS_CLONED_BY: WorkConnectionType.CLONES,
+
+    WorkConnectionType.DUPLICATES: WorkConnectionType.IS_DUPLICATED_BY,
+    WorkConnectionType.IS_DUPLICATED_BY: WorkConnectionType.DUPLICATES,
+
+    WorkConnectionType.HAS_TO_BE_FINISHED_TOGETHER_WITH: WorkConnectionType.HAS_TO_BE_FINISHED_TOGETHER_WITH,
+    WorkConnectionType.HAS_TO_BE_STARTED_TOGETHER_WITH: WorkConnectionType.HAS_TO_BE_STARTED_TOGETHER_WITH,
+    WorkConnectionType.RELATES_TO: WorkConnectionType.RELATES_TO,
+
+    WorkConnectionType.HAS_TO_BE_DONE_BEFORE: WorkConnectionType.HAS_TO_BE_DONE_AFTER,
+    WorkConnectionType.HAS_TO_BE_DONE_AFTER: WorkConnectionType.HAS_TO_BE_DONE_BEFORE,
+
+    WorkConnectionType.IS_PARENT_TASK_OF: WorkConnectionType.IS_SUBTASK_OF,
+    WorkConnectionType.IS_SUBTASK_OF: WorkConnectionType.IS_PARENT_TASK_OF,
+
+    WorkConnectionType.CAUSES: WorkConnectionType.IS_CAUSED_BY,
+    WorkConnectionType.IS_CAUSED_BY: WorkConnectionType.CAUSES,
+}
