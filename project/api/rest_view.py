@@ -25,6 +25,9 @@ class ProjectViewSet(ACLViewSetMixin):
     }
     ordering_fields = ['name', 'code_prefix']
 
+    lookup_field = 'slug'
+    lookup_url_kwarg = 'slug'
+
     def get_queryset(self):
         queryset = super().get_queryset().filter(is_active=True).order_by('-updated')
         return queryset
