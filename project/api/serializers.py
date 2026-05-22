@@ -180,26 +180,32 @@ class ProjectSerializer(serializers.ModelSerializer):
         return project
 
     def __set_active_version(self, project: Project, active_version: Optional[Dict]) -> None:
-        if active_version:
-            active_version_obj = ProjectVersion.objects.filter(id=active_version.get('id', None)).first()
-            if active_version_obj is None:
-                active_version_obj = ProjectVersion.objects.create(**active_version)
-            active_version_obj.in_work = True
-            active_version_obj.save()
-        else:
-            project.project_versions.update(in_work=False)
+        try:
+            if active_version:
+                active_version_obj = ProjectVersion.objects.filter(id=active_version.get('id', None)).first()
+                if active_version_obj is None:
+                    active_version_obj = ProjectVersion.objects.create(**active_version)
+                active_version_obj.in_work = True
+                active_version_obj.save()
+            else:
+                project.project_versions.update(in_work=False)
+        except Exception as _e:
+            raise serializers.ValidationError({'error': _e})
 
     def __set_project_statuses(self, project: Project, statuses: Optional[Dict]) -> None:
-        if statuses and len(statuses) > 0:
-            project_statuses_ids = set(project.project_statuses.all().values_list('status_id', flat=True))
-            included_statuses_ids = set([s.get('id', None) for s in statuses if s.get('id', None) is not None])
-            to_create = included_statuses_ids - project_statuses_ids
-            if len(to_create) > 0:
-                ProjectStatus.objects.bulk_create([
-                    ProjectStatus(project=project, status_id=status_id) for status_id in to_create
-                ])
-            to_delete = project_statuses_ids - included_statuses_ids
-            if len(to_delete) > 0:
-                ProjectStatus.objects.filter(project=project, status_id__in=to_delete).delete()
-        else:
-            project.project_statuses.all().delete()
+        try:
+            if statuses and len(statuses) > 0:
+                project_statuses_ids = set(project.project_statuses.all().values_list('status_id', flat=True))
+                included_statuses_ids = set([s.get('id', None) for s in statuses if s.get('id', None) is not None])
+                to_create = included_statuses_ids - project_statuses_ids
+                if len(to_create) > 0:
+                    ProjectStatus.objects.bulk_create([
+                        ProjectStatus(project=project, status_id=status_id) for status_id in to_create
+                    ])
+                to_delete = project_statuses_ids - included_statuses_ids
+                if len(to_delete) > 0:
+                    ProjectStatus.objects.filter(project=project, status_id__in=to_delete).delete()
+            else:
+                project.project_statuses.all().delete()
+        except Exception:
+            raise serializers.ValidationError({'error': 'Нельзя удалить статусы из проекта: есть прикрепленные задачи'})
