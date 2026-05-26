@@ -1,8 +1,13 @@
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from permissions.api.mixins import ACLViewSetMixin
+from project.api.serializers import ProjectStatusShortSerializer
+from project.models import ProjectStatus
 from references.api.filters import WorkTypeFilter
 from references.api.serializers import (
     StatusRowSerializer, WorkDifficultySerializer, WorkPrioritySerializer, WorkTagSerializer, WorkTechnologySerializer,
@@ -38,6 +43,19 @@ class ReferencesViewSetMixin(ACLViewSetMixin):
 class StatusRowViewSet(ReferencesViewSetMixin):
     queryset = StatusRow.objects.all()
     serializer_class = StatusRowSerializer
+
+    @action(detail=False, methods=["GET"], url_path="by-rows", url_name="by-rows")
+    def get_statuses_by_rows(self, request, *args, **kwargs) -> Response:
+        qs = ProjectStatus.objects.filter(is_active=True).select_related('status', 'project')
+        sprints = request.query_params.getlist('sprints')
+        if sprints:
+            qs = qs.filter(project__works__sprint__slug__in=sprints).distinct()
+        else:
+            qs = qs.none()
+        return Response(
+            ProjectStatusShortSerializer(qs, many=True).data,
+            status=status.HTTP_200_OK,
+        )
 
 
 class WorkDifficultyViewSet(ReferencesViewSetMixin):

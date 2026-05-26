@@ -53,6 +53,11 @@ class WorkFilter(django_filters.FilterSet):
         method='filter_by_sprint',
     )
 
+    sprints = RepeatedQueryParamFilter(
+        field_name='sprint__slug',
+        param_name='sprints',
+    )
+
     project = django_filters.CharFilter(
         method='filter_by_project',
     )

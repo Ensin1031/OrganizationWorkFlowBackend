@@ -10,7 +10,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from permissions.api.mixins import ACLViewSetMixin
-from sprint.api.serializers import SprintSerializer, SprintUserLoadSerializer, SprintWithoutUsersLeadTimeSerializer
+from sprint.api.serializers import (
+    SprintSerializer, SprintUserLoadSerializer, SprintWithoutUsersLeadTimeSerializer, SprintShortSerializer,
+)
 from sprint.models import Sprint
 from work.api.filters import WorkFilter
 
@@ -101,3 +103,13 @@ class SprintViewSet(ACLViewSetMixin):
             'users': SprintUserLoadSerializer(users, many=True, context={'request': request}).data,
             'without_users': SprintWithoutUsersLeadTimeSerializer(without_users, context={'request': request}).data
         }, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=["GET"], url_path="active", url_name="active")
+    def get_active_sprints(self, request, *args, **kwargs) -> Response:
+        return Response(
+            SprintShortSerializer(
+                self.get_queryset().filter(is_completed=False, in_work=True),
+                many=True,
+            ).data,
+            status=status.HTTP_200_OK,
+        )
