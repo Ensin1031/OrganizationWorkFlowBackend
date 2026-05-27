@@ -19,6 +19,7 @@ from references.models.work_priority import WorkPriority
 from references.models.work_tag import WorkTag
 from references.models.work_technology import WorkTechnology
 from references.models.work_type import WorkType
+from work.models.work import Work
 
 
 class ReferencesViewSetMixin(ACLViewSetMixin):
@@ -44,12 +45,20 @@ class StatusRowViewSet(ReferencesViewSetMixin):
     queryset = StatusRow.objects.all()
     serializer_class = StatusRowSerializer
 
-    @action(detail=False, methods=["GET"], url_path="by-rows", url_name="by-rows")
-    def get_statuses_by_rows(self, request, *args, **kwargs) -> Response:
+    @action(detail=False, methods=["GET"], url_path="by-sprints", url_name="by-sprints")
+    def get_by_sprints(self, request, *args, **kwargs) -> Response:
         qs = ProjectStatus.objects.filter(is_active=True).select_related('status', 'project')
         sprints = request.query_params.getlist('sprints')
         if sprints:
-            qs = qs.filter(project__works__sprint__slug__in=sprints).distinct()
+            qs = qs.filter(
+                project_id__in=Work.objects.filter(
+                    sprint__slug__in=sprints,
+                    is_active=True,
+                ).values_list(
+                    'project_id',
+                    flat=True,
+                ).distinct(),
+            ).distinct()
         else:
             qs = qs.none()
         return Response(
