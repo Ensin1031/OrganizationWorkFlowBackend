@@ -13,10 +13,11 @@ class ProjectStatusShortSerializer(serializers.ModelSerializer):
     slug = serializers.CharField(source='status.slug', read_only=True)
     color = serializers.CharField(source='status.color', read_only=True)
     icon = serializers.CharField(source='status.icon', read_only=True)
+    project_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = ProjectStatus
-        fields = ['id', 'name', 'status', 'slug', 'color', 'icon', 'priority']
+        fields = ['id', 'name', 'status', 'slug', 'color', 'icon', 'priority', 'project_id']
 
 
 class ProjectStatusSerializer(serializers.ModelSerializer):

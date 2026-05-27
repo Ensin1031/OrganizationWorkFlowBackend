@@ -1,8 +1,11 @@
 from django.db.models import F, CharField, Case, When, Value
 from django.db.models.functions import Concat
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
+from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from permissions.api.mixins import ACLViewSetMixin
 from utils.choices.work_connection_choices import REVERSE_TYPES
@@ -26,7 +29,12 @@ class WorkViewSet(ACLViewSetMixin):
     search_fields = ['name', 'slug']
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(is_active=True).order_by('-slug', '-updated')
+        queryset = super().get_queryset().filter(
+            is_active=True
+        ).select_related(
+            'epic', 'type', 'priority', 'project', 'sprint',
+            'status', 'created_by', 'execute_by', 'difficulty', 'technology',
+        ).order_by('-slug', '-updated')
         return queryset
 
     def create(self, request, *args, **kwargs):
@@ -37,6 +45,22 @@ class WorkViewSet(ACLViewSetMixin):
                 pass
             request.data['created_by_id'] = request.user.id
         return super().create(request, *args, **kwargs)
+
+    @action(detail=False, methods=["GET"], url_path="by-sprints", url_name="by-sprints")
+    def get_by_sprints(self, request, *args, **kwargs) -> Response:
+        qs = self.get_queryset().filter(is_active=True).select_related('sprint', 'project')
+        sprints = request.query_params.getlist('sprints')
+        without_types = request.query_params.getlist('without_types')
+        if sprints:
+            qs = qs.filter(sprint__slug__in=sprints).distinct()
+            if without_types:
+                qs = qs.exclude(type_id__in=without_types)
+        else:
+            qs = qs.none()
+        return Response(
+            WorkSerializer(qs, many=True, context={'request': request}).data,
+            status=status.HTTP_200_OK,
+        )
 
 
 class WorkConnectionViewSet(ACLViewSetMixin):

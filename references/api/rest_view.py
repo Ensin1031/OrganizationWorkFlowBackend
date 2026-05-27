@@ -62,7 +62,7 @@ class StatusRowViewSet(ReferencesViewSetMixin):
         else:
             qs = qs.none()
         return Response(
-            ProjectStatusShortSerializer(qs, many=True).data,
+            ProjectStatusShortSerializer(qs, many=True, context={'request': request}).data,
             status=status.HTTP_200_OK,
         )
 
