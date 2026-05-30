@@ -15,6 +15,7 @@ class UserExtendedAdmin(UserAdmin):
         (_('Personal info'), {
             'fields': (
                 'email', 'first_name', 'second_name', 'last_name', 'is_verified', 'birth_date', 'profile_photo',
+                ('need_send_email_notification', 'need_send_push_notification'),
             )}),
         (
             _('Permissions'),

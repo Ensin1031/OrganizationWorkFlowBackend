@@ -24,6 +24,13 @@ class UserExtended(CreatedUpdatedMixin, IsActiveMixin, SlugMixin, ACLModelMixin,
         validators=[validate_is_image, validate_is_image_not_broken, validate_image_size],
     )
 
+    need_send_email_notification = models.BooleanField(
+        "Отправлять пользователю письма - уведомления", default=True, blank=True,
+    )
+    need_send_push_notification = models.BooleanField(
+        "Отправлять пользователю пуш - уведомления", default=True, blank=True,
+    )
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', ]
 

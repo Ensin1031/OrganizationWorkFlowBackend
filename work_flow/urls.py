@@ -23,6 +23,7 @@ from django.views.static import serve
 urlpatterns = [
 
     path('api/', include('users.urls')),
+    path('api/', include('notifications.urls')),
     path('api/', include('project.urls')),
     path('api/', include('sprint.urls')),
     path('api/', include('work.urls')),
