@@ -62,9 +62,10 @@
    ```shell
    --settings=work_flow.local_settings
    # Например
-   ./manage.py createsuperuser --settings=roaddb.local_settings
-   # или
-   ./manage.py runserver --settings=roaddb.local_settings
+   ./manage.py createsuperuser --settings=work_flow.local_settings
+   ./manage.py runserver --settings=work_flow.local_settings
+   ./manage.py migrate --settings=work_flow.local_settings
+   ./manage.py makemigrations --settings=work_flow.local_settings
    ```
 6. Запускаем celery в командной строке:
      ```shell

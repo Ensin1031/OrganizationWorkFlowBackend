@@ -77,3 +77,17 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data: Dict[str, Union[str, Dict]] = super().validate(attrs)
         data['user'] = dict(UserSerializer(self.user, context={'request': self.context.get('request') or None}).data)
         return data
+
+
+class PaginatedItemsSerializer(serializers.Serializer):
+    count = serializers.IntegerField()
+    has_next_page = serializers.BooleanField()
+    results = serializers.ListField()
+
+
+class GlobalSearchResponseSerializer(serializers.Serializer):
+    projects = PaginatedItemsSerializer()
+    sprints = PaginatedItemsSerializer()
+    epiks = PaginatedItemsSerializer()
+    histories = PaginatedItemsSerializer()
+    tasks = PaginatedItemsSerializer()

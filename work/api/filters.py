@@ -49,14 +49,17 @@ class WorkFilter(django_filters.FilterSet):
         param_name='epic',
     )
 
-    sprint = django_filters.BaseInFilter(
-        field_name='sprint',
-        lookup_expr='in',
+    sprint = django_filters.CharFilter(
+        method='filter_by_sprint',
     )
 
-    project = django_filters.BaseInFilter(
-        field_name='project',
-        lookup_expr='in',
+    sprints = RepeatedQueryParamFilter(
+        field_name='sprint__slug',
+        param_name='sprints',
+    )
+
+    project = django_filters.CharFilter(
+        method='filter_by_project',
     )
 
     created_by = django_filters.BaseInFilter(
@@ -84,13 +87,21 @@ class WorkFilter(django_filters.FilterSet):
     def filter_without_sprints(self, queryset, name, value):
         if value is True:
             return queryset.filter(sprint__isnull=True)
-
         return queryset
 
     def filter_without_execute_by(self, queryset, name, value):
         if value is True:
             return queryset.filter(execute_by__isnull=True)
+        return queryset
 
+    def filter_by_project(self, queryset, name, value):
+        if value:
+            return queryset.filter(project__slug=value)
+        return queryset
+
+    def filter_by_sprint(self, queryset, name, value):
+        if value:
+            return queryset.filter(sprint__slug=value)
         return queryset
 
 
