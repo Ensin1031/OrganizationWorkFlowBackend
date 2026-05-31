@@ -38,6 +38,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'username', 'email', 'password', 'profile_photo', 'profile_photo_remove', 'profile_photo_init',
             'first_name', 'last_name', 'second_name', 'full_name', 'birth_date',
+            'need_send_email_notification', 'need_send_push_notification',
         ]
 
     def get_profile_photo(self, obj):

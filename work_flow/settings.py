@@ -44,6 +44,7 @@ TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test' or 'pytest' in sys.argv[0]
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,8 +52,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'channels',
     'corsheaders',
     'colorfield',
+    'django_json_widget',
     'mptt',
     'nested_admin',
     'django_ckeditor_5',
@@ -60,6 +63,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'users',
+    'notifications',
     'project',
     'sprint',
     'work',
@@ -215,6 +219,16 @@ os.environ.setdefault('E_REDIS_PORT', '6379')
 os.environ.setdefault('E_REDIS_DB_IDENTIFIER', '')
 os.environ.setdefault('E_REDIS_DB_IDENTIFIER_1', '1')
 os.environ.setdefault('E_REDIS_DB_IDENTIFIER_2', '2')
+
+# настройка отправки писем
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL") == "True"
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS") == "True"
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 CELERY_BROKER_URL = f'redis://{os.environ.get("E_REDIS_HOST")}:{os.environ.get("E_REDIS_PORT")}/{os.environ.get("E_REDIS_DB_IDENTIFIER")}'  # noqa
 CELERY_RESULT_BACKEND = f'redis://{os.environ.get("E_REDIS_HOST")}:{os.environ.get("E_REDIS_PORT")}/{os.environ.get("E_REDIS_DB_IDENTIFIER")}'  # noqa

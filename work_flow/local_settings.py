@@ -59,17 +59,27 @@ CACHES = {
 
 CACHE_FUNC = lambda seconds, cache: never_cache  # noqa
 
+# во время разработки - отправляем письма в консоль
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
 SIGNING_ENABLED = True
 
 # Если True — клиент будет доверять сертификату сервера (игнорирует ошибки SSL).
 DATABASE_TRUST_SERVER_CERTIFICATE = True
 
 
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             "hosts": [('localhost', 6379)],
+#         },
+#     },
+# }
+
+
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('localhost', 6379)],
-        },
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
     },
 }
